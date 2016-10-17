@@ -1,0 +1,100 @@
+<%= form_tag do |f| %>
+  <%= label_tag 'Fee Type' %>
+  <%= select_tag 'fee_type', options_for_select(["Exam Fee", "Application Fee"]), {onchange: "select_fee(this.options[this.selectedIndex].value);return false;", id: 'fee_box'}	 %>
+  <%= label_tag 'Nationality' %>
+  <%= select_tag 'nationality', options_for_select([]), {id: 'nationality_box', disabled: true}  %>
+  <%= label_tag 'Courses' %>
+  <%= select_tag 'courses', options_for_select(['Medical', 'Dental', 'Ayurveda']), {id: 'courses_box', disabled: true} %>
+  <%= label_tag 'Level' %>
+  <%= select_tag 'level', options_for_select([]), {id: 'level_box', disabled: true} %>
+  Amount: <span id="amount_box"></span>
+<% end %>
+
+<script>
+
+var string = '{"ExamFee":{"INDIAN":{"ALL_COURSES":{"ALL_LEVEL":{"amount":400}}}, "FOREIGN":{"ALL_COURSES":{"ALL_LEVEL":{"amount":100}}}, "NRI":{"ALL_COURSES":{"ALL_LEVEL":{"amount":600}}}, "SAARC":{"ALL_COURSES":{"ALL_LEVEL":{"amount":600}}}}, "ApplicationFee":{"INDIAN":{"ALL_COURSES":{"UG":{"amount":200}, "UGDIPLOMA":{"amount":300}, "PG":{"amount":500}}}, "FOREIGN":{"ALL_COURSES":{"UG":{"amount":400}, "UGDIPLOMA":{"amount":400}, "PG":{"amount":700}}}}}';
+
+var obj = JSON.parse(string);
+
+function select_fee(val){
+  
+if(val === 'Exam Fee'){
+	var options = [{"text": 'INDIAN', "value": 'Indian'}, {"text": 'FOREIGN', "value": 'Foreign'}, {"text": 'NRI', "value": 'NRI'}, {"text":'SAARC', "value": 'SAARC'}]
+	var selectBox = document.getElementById('nationality_box');
+	selectBox.disabled = false;
+	document.getElementById('courses_box').disabled = false;
+	document.getElementById('level_box').disabled = true;
+	document.getElementById('amount_box').innerHTML = "";
+	selectBox.options.length = 0;
+	for(var i = 0, l = options.length; i < l; i++){
+  		var option = options[i];
+  		selectBox.options.add( new Option(option.text, option.value, option.selected) );
+	}
+
+}else if(val === 'Application Fee'){
+	var options = [{"text": 'INDIAN', "value": 'Indian'}, {"text": 'FOREIGN', "value": 'Foreign'}]
+	var selectBox = document.getElementById('nationality_box');
+	selectBox.disabled = false;
+	document.getElementById('courses_box').disabled = false;
+	document.getElementById('level_box').disabled = true;
+	document.getElementById('amount_box').innerHTML = "";
+	selectBox.options.length = 0;
+	for(var i = 0, l = options.length; i < l; i++){
+  		var option = options[i];
+  		selectBox.options.add( new Option(option.text, option.value, option.selected) );
+	}
+}};
+
+document.getElementById('nationality_box').onchange =
+function(){
+	var selectBox3 = document.getElementById('level_box');
+	if(selectBox3.disabled == false){
+		calculate_fee();
+	}
+}
+
+document.getElementById('courses_box').onchange =
+	function(){
+		var val = this.options[this.selectedIndex].value;
+		
+	var options = [{"text": 'Medical', "value": 'Medical'}, {"text": 'Dental', "value": 'Dental'}, {"text": 'Ayurveda', "value": 'Ayurveda'}]
+	var selectBox = document.getElementById('level_box');
+	selectBox.disabled= false;
+	selectBox.options.length = 0;
+	var selectBox1 = document.getElementById('fee_box');
+	if(selectBox1.options[selectBox1.selectedIndex].value == 'Application Fee'){
+		var options = [{"text": 'UG', "value": 'UG'}, {"text": 'UGDIPLOMA', "value": 'UGDIPLOMA'}, {"text": 'PG', "value": 'PG'}];
+		for(var i = 0, l = options.length; i < l; i++){
+	  		var option = options[i];
+			selectBox.options.add(new Option(option.text, option.value, option.selected));
+		}
+	}else{
+		var options = [{"text": 'UG', "value": 'UG'}, {"text": 'DIPLOMA', "value": 'DIPLOMA'}, {"text": 'PG', "value": 'PG'}, {"text": "Ph.D", "value":"Phd"}];
+		for(var i = 0, l = options.length; i < l; i++){
+	  		var option = options[i];
+			selectBox.options.add(new Option(option.text, option.value, option.selected));
+		}
+	}
+};
+
+document.getElementById('level_box').onchange =
+function(){
+	calculate_fee();
+};
+
+function calculate_fee(){
+	var selectBox1 = document.getElementById('fee_box');
+	var selectBox2 = document.getElementById('nationality_box');
+	var selectBox3 = document.getElementById('level_box');
+	
+	var nationality_val = selectBox2.options[selectBox2.selectedIndex].text;
+	var level_val = selectBox3.options[selectBox3.selectedIndex].text;
+
+	if(selectBox1.options[selectBox1.selectedIndex].value == 'Application Fee'){
+		console.log(obj.ApplicationFee[nationality_val].ALL_COURSES[level_val].amount);
+		document.getElementById('amount_box').innerHTML = obj.ApplicationFee[nationality_val].ALL_COURSES[level_val].amount;
+	}else{
+		document.getElementById('amount_box').innerHTML = obj.ExamFee[nationality_val].ALL_COURSES.ALL_LEVEL.amount;
+	}
+}
+</script>
