@@ -4,7 +4,9 @@ Steps to setup and run the program:
 
 To setup the program, 
 1. clone the repository with git clone https://github.com/rashmiagar/fee_program.git
+
 2. rails s 
+
 3. Go to http://localhost:300/fee
 
 
